@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD: safeall_secret
       POSTGRES_DB: safeall_db
     ports:
-      - "5432:5432"
+      - "5433:5432" # Mapeado para 5433 na máquina hospedeira para evitar conflitos com PostgreSQL local
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
