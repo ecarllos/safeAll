@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: safeall_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: safeall
+      POSTGRES_PASSWORD: safeall_secret
+      POSTGRES_DB: safeall_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: safeall_backend
+    restart: always
+    environment:
+      DATABASE_URL: "postgresql://safeall:safeall_secret@postgres:5432/safeall_db?schema=public"
+      JWT_SECRET: "safeall_jwt_super_secret_key_change_in_production"
+      PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - postgres
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: safeall_frontend
+    restart: always
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
