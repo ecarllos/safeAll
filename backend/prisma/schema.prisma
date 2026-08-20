@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                 String      @id @default(uuid())
+  email              String      @unique
+  masterPasswordHash String
+  salt               String
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+  vaultItems         VaultItem[]
+
+  @@map("users")
+}
+
+model VaultItem {
+  id            String             @id @default(uuid())
+  userId        String
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  category      String
+  username      String?
+  url           String?
+  encryptedData String
+  iv            String
+  authTag       String
+  notes         String?
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  history       VaultItemHistory[]
+
+  @@map("vault_items")
+}
+
+model VaultItemHistory {
+  id            String    @id @default(uuid())
+  vaultItemId   String
+  vaultItem     VaultItem @relation(fields: [vaultItemId], references: [id], onDelete: Cascade)
+  encryptedData String
+  iv            String
+  authTag       String
+  changedAt     DateTime  @default(now())
+
+  @@map("vault_item_histories")
+}
