@@ -24,4 +24,4 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma db push && node dist/main"]
+CMD ["sh", "-c", "until npx prisma db push; do echo 'Aguardando banco de dados PostgreSQL...'; sleep 2; done && node dist/main"]
